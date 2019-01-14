@@ -16,7 +16,7 @@ ultron-version-bump -P ~/zipcar/ultron/server/resources/manifest.yaml -m -g
 `--> 1.222.3 -> 1.223.0`
 
 ultron-version-bump -P ~/zipcar/ultron/server/resources/manifest.yaml -p -g 
-> minor version bump and push to git
+> patch version bump and push to git
 ` --> 1.222.3 -> 1.222.4`
 
 ultron-version-bump -P ~/zipcar/ultron/server/resources/manifest.yaml -M -g 
