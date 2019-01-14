@@ -1,0 +1,89 @@
+
+
+while getopts ":P:gMmp" opt; do
+  case $opt in
+    P)
+      fullFilePath=${OPTARG}
+      ;;
+    g)
+      git=true
+      ;;
+    M)
+      major=true
+      ;;
+    m)
+      minor=true
+      ;;
+    p) 
+      patch=true
+      ;;
+  esac
+done
+
+if [ -z "$fullFilePath" ]
+  then
+    echo "Must supply path to manifest"
+    exit 1
+fi
+
+if [ ! -f "$fullFilePath" ]; then
+    echo "File not found!"
+    exit 1
+fi
+
+path=$( echo ${fullFilePath%/*} )
+file=$( echo ${fullFilePath##/*/} )
+
+cd $path
+
+version=$(sed -n '/version.*/p' $file)
+echo $version
+echo $file
+
+versionNumber="$(cut -d':' -f2 <<<"$version")"
+
+maj="$(cut -d'.' -f1 <<<"$versionNumber")"
+min="$(cut -d'.' -f2 <<<"$versionNumber")"
+pat="$(cut -d'.' -f3 <<<"$versionNumber")"
+
+newVersion="$maj.$min.$pat"
+
+if [ "$patch" == 'true' ]; then
+  echo "bumping patch"
+  newVersion="$maj.$min.$((pat + 1))"
+fi
+
+if [ "$minor" == 'true' ]; then
+  echo "bumping minor"
+  newVersion="$maj.$((min + 1)).0"
+fi
+
+if [ "$major" == 'true' ]; then
+  echo "bumping major"
+  newVersion="$((maj + 1)).0.0"
+fi
+
+echo $newVersion
+
+echo current version is $version
+sleep 1
+echo writing $newVersion to $file
+sleep 1
+sed -i -e "s/$version/version: $newVersion/" $file
+sleep 1
+echo successfully wrote to $file, printing new $file
+sleep 1
+cat $file
+sleep 1
+if [ "$git" == 'true' ]; then
+    echo "Pushing to git"
+	git add $fullFilePath
+	git commit -m 'bumping version'
+	git push origin head
+fi
+
+copiedFile="$fullFilePath-e"
+
+rm $copiedFile
+
+exit 0
