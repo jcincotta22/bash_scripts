@@ -60,7 +60,7 @@ fi
 
 if [ "$major" == 'true' ]; then
   echo "bumping major"
-  newVersion="$((maj + 1)).0.0"
+  newVersion=" $((maj + 1)).0.0"
 fi
 
 echo $newVersion
@@ -69,7 +69,7 @@ echo current version is $version
 sleep 1
 echo writing $newVersion to $file
 sleep 1
-sed -i -e "s/$version/version: $newVersion/" $file
+sed -i -e "s/$version/version:$newVersion/" $file
 sleep 1
 echo successfully wrote to $file, printing new $file
 sleep 1
@@ -77,9 +77,9 @@ cat $file
 sleep 1
 if [ "$git" == 'true' ]; then
     echo "Pushing to git"
-	git add $fullFilePath
-	git commit -m 'bumping version'
-	git push origin head
+  git add $fullFilePath
+  git commit -m 'bumping version'
+  git push origin head
 fi
 
 copiedFile="$fullFilePath-e"
